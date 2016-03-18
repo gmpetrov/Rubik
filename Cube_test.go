@@ -237,3 +237,103 @@ func TestBackPrime(t *testing.T) {
 		}
 	}
 }
+
+func TestUp(t *testing.T) {
+	cube := NewCube()
+
+	want := [][]int{
+		{RED, RED, RED, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},
+		{GREEN, GREEN, GREEN, RED, RED, RED, RED, RED, RED},
+		{BLUE, BLUE, BLUE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE},
+		{YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW},
+		{ORANGE, ORANGE, ORANGE, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN},
+		{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, RED, RED, RED},
+	}
+
+	cube.Up()
+
+	for index, face := range cube.data {
+		for i := 0; i < len(cube.data); i++ {
+			if want[index][i] != face[i] {
+				t.Errorf("index = %v, i = %v", index, i)
+				t.Errorf("%v != %v", want[index][i], face[i])
+				t.Errorf("Up() expected %v, got %v", want[index], face)
+			}
+		}
+	}
+}
+
+func TesUpPrime(t *testing.T) {
+	cube := NewCube()
+
+	want := [][]int{
+		{RED, RED, RED, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},
+		{GREEN, GREEN, GREEN, RED, RED, RED, RED, RED, RED},
+		{BLUE, BLUE, BLUE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE},
+		{YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW},
+		{ORANGE, ORANGE, ORANGE, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN},
+		{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, RED, RED, RED},
+	}
+
+	cube.UpPrime()
+
+	for index, face := range cube.data {
+		for i := 0; i < len(cube.data); i++ {
+			if want[index][i] != face[i] {
+				t.Errorf("index = %v, i = %v", index, i)
+				t.Errorf("%v != %v", want[index][i], face[i])
+				t.Errorf("UpPrime() expected %v, got %v", want[index], face)
+			}
+		}
+	}
+}
+
+func TestDown(t *testing.T) {
+	cube := NewCube()
+
+	want := [][]int{
+		{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, ORANGE, ORANGE, ORANGE},
+		{RED, RED, RED, RED, RED, RED, BLUE, BLUE, BLUE},
+		{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, GREEN, GREEN, GREEN},
+		{YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW},
+		{GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, RED, RED, RED},
+		{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},
+	}
+
+	cube.Down()
+
+	for index, face := range cube.data {
+		for i := 0; i < len(cube.data); i++ {
+			if want[index][i] != face[i] {
+				t.Errorf("index = %v, i = %v", index, i)
+				t.Errorf("%v != %v", want[index][i], face[i])
+				t.Errorf("Down() expected %v, got %v", want[index], face)
+			}
+		}
+	}
+}
+
+func TestDownPrime(t *testing.T) {
+	cube := NewCube()
+
+	want := [][]int{
+		{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, RED, RED, RED},
+		{RED, RED, RED, RED, RED, RED, GREEN, GREEN, GREEN},
+		{ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, BLUE, BLUE, BLUE},
+		{YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW},
+		{GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, ORANGE, ORANGE, ORANGE},
+		{WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE},
+	}
+
+	cube.DownPrime()
+
+	for index, face := range cube.data {
+		for i := 0; i < len(cube.data); i++ {
+			if want[index][i] != face[i] {
+				t.Errorf("index = %v, i = %v", index, i)
+				t.Errorf("%v != %v", want[index][i], face[i])
+				t.Errorf("DownPrime() expected %v, got %v", want[index], face)
+			}
+		}
+	}
+}

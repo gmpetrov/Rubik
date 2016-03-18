@@ -12,17 +12,80 @@ const (
 	WHITE
 )
 
+func printBlue() {
+	fmt.Print("\033[1;44m  \033[0m")
+}
+
+func printGreen() {
+	fmt.Print("\033[1;42m  \033[0m")
+}
+
+func printRed() {
+	fmt.Print("\033[1;41m  \033[0m")
+}
+
+func printOrange() {
+	fmt.Print("\033[1;45m  \033[0m")
+}
+
+func printYellow() {
+	fmt.Print("\033[1;43m  \033[0m")
+}
+
+func printWhite() {
+	fmt.Print("\033[1;47m  \033[0m")
+}
+
+func getColorMap() map[int]interface{} {
+
+	colorMap := map[int]interface{}{
+		BLUE:   printBlue,
+		RED:    printRed,
+		ORANGE: printOrange,
+		YELLOW: printYellow,
+		GREEN:  printGreen,
+		WHITE:  printWhite,
+	}
+
+	return colorMap
+}
+
 type Cube struct {
 	length    int
 	data      [][]int
 	facesName map[int]string
+	facesMap  map[int]int
+}
+
+func (cube Cube) getMovementsMap() map[string]interface{} {
+	movementsMap := map[string]interface{}{
+		"F":  cube.Front,
+		"F'": cube.FrontPrime,
+		"B":  cube.Back,
+		"B'": cube.BackPrime,
+		"R":  cube.Right,
+		"R'": cube.RightPrime,
+		"L":  cube.Left,
+		"L'": cube.LeftPrime,
+		"U":  cube.Up,
+		"U'": cube.UpPrime,
+		"D":  cube.Down,
+		"D'": cube.DownPrime,
+		"F2": cube.FrontDouble,
+		"B2": cube.BackDouble,
+		"R2": cube.RightDouble,
+		"L2": cube.LeftDouble,
+		"U2": cube.UpDouble,
+		"D2": cube.DownDouble,
+	}
+	return movementsMap
 }
 
 func NewCube() Cube {
 
 	length := 3
 
-	// 3x3 Rubik's cube
+	// 3x3x3 Rubik's cube
 	data := [][]int{
 		{BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE},                   // 0 Front
 		{RED, RED, RED, RED, RED, RED, RED, RED, RED},                            // 1 Right
@@ -41,7 +104,16 @@ func NewCube() Cube {
 		5: "Bottom",
 	}
 
-	return Cube{length, data, facesName}
+	facesMap := map[int]int{
+		0: BLUE,
+		1: RED,
+		2: ORANGE,
+		3: YELLOW,
+		4: GREEN,
+		5: WHITE,
+	}
+
+	return Cube{length, data, facesName, facesMap}
 }
 
 func (cube Cube) Rotate(index int) {
@@ -140,9 +212,21 @@ func (cube Cube) setFaceRow(face []int, index int, values []int) {
 }
 
 func (cube Cube) printCube() {
+	colorMap := getColorMap()
+
+	fmt.Print("------------------------\n")
 	for index, face := range cube.data {
-		fmt.Printf("%s\n%v\n%v\n%v\n\n", cube.facesName[index], face[:3], face[3:6], face[6:])
+		fmt.Printf("%s :", cube.facesName[index])
+		for i := 0; i < len(face); i++ {
+			if i%3 == 0 {
+				fmt.Print("\n\n")
+			}
+			colorMap[face[i]].(func())()
+			fmt.Print(" ")
+		}
+		fmt.Print("\n\n")
 	}
+	fmt.Print("------------------------\n")
 }
 
 func (cube Cube) Front() {
@@ -154,8 +238,6 @@ func (cube Cube) Front() {
 	topFace := cube.getTopFace()
 
 	tmp := cube.getFaceColumn(leftFace, 2)
-
-	fmt.Printf("tmp = %v\n", tmp)
 
 	cube.setFaceColumn(leftFace, 2, cube.getFaceRow(bottomFace, 0))
 	cube.setFaceRow(bottomFace, 0, cube.getFaceColumn(rightFace, 0))
@@ -275,4 +357,121 @@ func (cube Cube) LeftPrime() {
 	cube.setFaceColumn(backFace, 2, cube.getFaceColumn(topFace, 0))
 	cube.setFaceColumn(topFace, 0, tmp)
 
+}
+
+func (cube Cube) Up() {
+	cube.Rotate(3)
+
+	backFace := cube.getBackFace()
+	leftFace := cube.getLeftFace()
+	frontFace := cube.getFrontFace()
+	rightFace := cube.getRightFace()
+
+	tmp := cube.getFaceRow(frontFace, 0)
+
+	cube.setFaceRow(frontFace, 0, cube.getFaceRow(rightFace, 0))
+	cube.setFaceRow(rightFace, 0, cube.getFaceRow(backFace, 0))
+	cube.setFaceRow(backFace, 0, cube.getFaceRow(leftFace, 0))
+	cube.setFaceRow(leftFace, 0, tmp)
+}
+
+func (cube Cube) UpPrime() {
+	cube.RotateInverse(3)
+
+	backFace := cube.getBackFace()
+	leftFace := cube.getLeftFace()
+	frontFace := cube.getFrontFace()
+	rightFace := cube.getRightFace()
+
+	tmp := cube.getFaceRow(frontFace, 0)
+
+	cube.setFaceRow(frontFace, 0, cube.getFaceRow(leftFace, 0))
+	cube.setFaceRow(leftFace, 0, cube.getFaceRow(backFace, 0))
+	cube.setFaceRow(backFace, 0, cube.getFaceRow(rightFace, 0))
+	cube.setFaceRow(rightFace, 0, tmp)
+}
+
+func (cube Cube) Down() {
+	cube.Rotate(5)
+
+	backFace := cube.getBackFace()
+	leftFace := cube.getLeftFace()
+	frontFace := cube.getFrontFace()
+	rightFace := cube.getRightFace()
+
+	tmp := cube.getFaceRow(frontFace, 2)
+
+	cube.setFaceRow(frontFace, 2, cube.getFaceRow(leftFace, 2))
+	cube.setFaceRow(leftFace, 2, cube.getFaceRow(backFace, 2))
+	cube.setFaceRow(backFace, 2, cube.getFaceRow(rightFace, 2))
+	cube.setFaceRow(rightFace, 2, tmp)
+}
+
+func (cube Cube) DownPrime() {
+	cube.RotateInverse(5)
+
+	backFace := cube.getBackFace()
+	leftFace := cube.getLeftFace()
+	frontFace := cube.getFrontFace()
+	rightFace := cube.getRightFace()
+
+	tmp := cube.getFaceRow(frontFace, 2)
+
+	cube.setFaceRow(frontFace, 2, cube.getFaceRow(rightFace, 2))
+	cube.setFaceRow(rightFace, 2, cube.getFaceRow(backFace, 2))
+	cube.setFaceRow(backFace, 2, cube.getFaceRow(leftFace, 2))
+	cube.setFaceRow(leftFace, 2, tmp)
+}
+
+func (cube Cube) FrontDouble() {
+	cube.Front()
+	cube.Front()
+}
+
+func (cube Cube) BackDouble() {
+	cube.Back()
+	cube.Back()
+}
+
+func (cube Cube) RightDouble() {
+	cube.Right()
+	cube.Right()
+}
+
+func (cube Cube) LeftDouble() {
+	cube.Left()
+	cube.Left()
+}
+
+func (cube Cube) UpDouble() {
+	cube.Up()
+	cube.Up()
+}
+
+func (cube Cube) DownDouble() {
+	cube.Down()
+	cube.Down()
+}
+
+func (cube Cube) Shuffle(movements []string) {
+
+	movementsMap := cube.getMovementsMap()
+
+	for _, value := range movements {
+		if DEBUG {
+			cube.printCube()
+		}
+		movementsMap[value].(func())()
+	}
+}
+
+func (cube Cube) isSolved() bool {
+	for index, face := range cube.data {
+		for i := 0; i < len(face); i++ {
+			if face[i] != cube.facesMap[index] {
+				return false
+			}
+		}
+	}
+	return true
 }
