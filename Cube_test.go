@@ -337,3 +337,120 @@ func TestDownPrime(t *testing.T) {
 		}
 	}
 }
+
+func TestGetFaceTopEdge(t *testing.T) {
+	cube := NewCube()
+
+	want := RED
+
+	cube.Up()
+
+	edge := cube.getFaceTopEdge(cube.getFrontFace())
+
+	if edge != want {
+		t.Errorf("getFaceTopEdge() : edge = %v, want %v", edge, want)
+	}
+}
+
+func TestGetFaceLefEdge(t *testing.T) {
+	cube := NewCube()
+
+	want := YELLOW
+
+	cube.Left()
+
+	edge := cube.getFaceLeftEdge(cube.getFrontFace())
+
+	if edge != want {
+		t.Errorf("getFaceLeftEdge() : edge = %v, want %v", edge, want)
+	}
+}
+
+func TestGetFaceRightEdge(t *testing.T) {
+	cube := NewCube()
+
+	want := WHITE
+
+	cube.Right()
+
+	edge := cube.getFaceRightEdge(cube.getFrontFace())
+
+	if edge != want {
+		t.Errorf("getFaceRightEdge() : edge = %v, want %v", edge, want)
+	}
+}
+
+func TestGetFaceBottomEdge(t *testing.T) {
+	cube := NewCube()
+
+	want := ORANGE
+
+	cube.Down()
+
+	edge := cube.getFaceBottomEdge(cube.getFrontFace())
+
+	if edge != want {
+		t.Errorf("getFaceBottomEdge() : edge = %v, want %v", edge, want)
+	}
+}
+
+func TestGetFaceCenter(t *testing.T) {
+	cube := NewCube()
+
+	cases := []struct {
+		got, want int
+	}{
+		{cube.getFaceCenter(cube.getTopFace()), YELLOW},
+		{cube.getFaceCenter(cube.getBottomFace()), WHITE},
+		{cube.getFaceCenter(cube.getLeftFace()), ORANGE},
+		{cube.getFaceCenter(cube.getRightFace()), RED},
+		{cube.getFaceCenter(cube.getFrontFace()), BLUE},
+		{cube.getFaceCenter(cube.getBackFace()), GREEN},
+	}
+
+	for _, c := range cases {
+		if c.got != c.want {
+			t.Errorf("getFaceCenter() : got %v, want %v", c.got, c.want)
+		}
+	}
+}
+
+func TestGetTopFaceRightEdgeOpposite(t *testing.T) {
+	cube := NewCube()
+
+	want := RED
+	got := cube.getTopFaceRightEdgeOpposite()
+	if got != want {
+		t.Errorf("getTopFaceRightEdgeOpposite() : got = %v, want %v", got, want)
+	}
+}
+
+func TestGetTopFaceTopEdgeOpposite(t *testing.T) {
+	cube := NewCube()
+
+	want := GREEN
+	got := cube.getTopFaceTopEdgeOpposite()
+	if got != want {
+		t.Errorf("getTopFaceTopEdgeOpposite() : got = %v, want %v", got, want)
+	}
+}
+
+func TestGetTopFaceBottomEdgeOpposite(t *testing.T) {
+	cube := NewCube()
+
+	want := BLUE
+	got := cube.getTopFaceBottomEdgeOpposite()
+	if got != want {
+		t.Errorf("getTopFaceBottomEdgeOpposite() : got = %v, want %v", got, want)
+	}
+}
+
+func TestGetTopFaceLeftEdgeOpposite(t *testing.T) {
+	cube := NewCube()
+
+	want := ORANGE
+	got := cube.getTopFaceLeftEdgeOpposite()
+	if got != want {
+		t.Errorf("getTopFaceLeftEdgeOpposite() : got = %v, want %v", got, want)
+	}
+}

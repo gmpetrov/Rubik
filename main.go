@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var DEBUG bool = false
+var DEBUG bool = true
 
 func parse(str string) []string {
 	str = strings.Trim(str, " ")
@@ -39,4 +39,12 @@ func main() {
 	cube := NewCube()
 
 	cube.Shuffle(movements)
+
+	solver := Solver{}
+
+	solver.Resolve(cube)
+
+	solver.PrintNumberMoves()
+
+	cube.printCube()
 }
