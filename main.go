@@ -38,7 +38,7 @@ func main() {
 
 	cube := NewCube()
 
-	cube.Shuffle(movements)
+	cube.RunSequence(movements)
 
 	solver := Solver{}
 

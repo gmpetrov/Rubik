@@ -105,12 +105,31 @@ func (s *Solver) BottomEdgeSwapPattern(cube Cube) {
 	)
 }
 
+type getFaceFn func() []int
+
+// func (s *Solver) ResolveTopFaceEdges(cube Cube) {
+// 	latFaces := []struct {
+// 		getFace         getFaceFn
+// 		edgeSwapPattern patternFn
+// 	}{
+// 		{cube.getFrontFace, s.BottomEdgeSwapPattern},
+// 		{cube.getBackFace, s.TopEdgeSwapPattern},
+// 		{cube.getLeftFace, s.LeftEdgeSwapPattern},
+// 		{cube.getRightFace, s.RightEdgeSwapPattern},
+// 	}
+
+// 	for _, data := range latFaces {
+// 		face := data.getFace()
+
+// 		if face[EDGE_TOP] == WHITE {
+// 			data.edgeSwapPattern(cube)
+// 		}
+// 	}
+// }
+
 func (s *Solver) makeCross(cube Cube) {
 	for !s.hasCross(cube) {
-		// s.ResolveTopFaceEdges(cube, cube.getFaceRightEdge, cube.getTopFaceRightEdgeOpposite, cube.Right, s.RightEdgeSwapPattern, s.hasRightSideEdgesOfColor)
-		// s.ResolveTopFaceEdges(cube, cube.getFaceLeftEdge, cube.getTopFaceLeftEdgeOpposite, cube.Left, s.LeftEdgeSwapPattern, s.hasLeftSideEdgesOfColor)
-		// s.ResolveTopFaceEdges(cube, cube.getFaceTopEdge, cube.getTopFaceTopEdgeOpposite, cube.Front, s.TopEdgeSwapPattern, s.hasFrontSideEdgesOfColor)
-		// s.ResolveTopFaceEdges(cube, cube.getFaceBottomEdge, cube.getTopFaceBottomEdgeOpposite, cube.Back, s.BottomEdgeSwapPattern, s.hasBackSideEdgesOfColor)
+		// s.ResolveTopFaceEdges()
 	}
 }
 

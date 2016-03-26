@@ -21,6 +21,18 @@ const (
 	BOTTOM
 )
 
+const (
+	CORNER_TOP_LEFT = iota
+	EDGE_TOP
+	CORNER_TOP_RIGHT
+	EDGE_LEFT
+	CENTER
+	EDGE_RIGHT
+	CORNER_BOTTOM_LEFT
+	EDGE_BOTTOM
+	CORNER_BOTTOM_RIGHT
+)
+
 func printBlue() {
 	fmt.Print("\033[1;44m  \033[0m")
 }
@@ -64,13 +76,13 @@ type Cube struct {
 	data        [][]int
 	facesMap    map[int]int
 	connections map[int]struct {
-		name                     string
-		left, right, top, bottom int
+		name                           string
+		left, right, top, bottom, back int
 	}
 }
 
 type Edge struct {
-	a, b int
+	face, a, b int
 }
 
 func (cube Cube) getMovementsMap() map[string]interface{} {
@@ -121,18 +133,32 @@ func NewCube() Cube {
 	}
 
 	connections := map[int]struct {
-		name                     string
-		left, right, top, bottom int
+		name                           string
+		left, right, top, bottom, back int
 	}{
-		FRONT:  {"Front", LEFT, RIGHT, TOP, BOTTOM},
-		BACK:   {"Back", RIGHT, LEFT, TOP, BOTTOM},
-		LEFT:   {"Left", BACK, FRONT, TOP, BOTTOM},
-		RIGHT:  {"Right", FRONT, BACK, TOP, BOTTOM},
-		TOP:    {"Top", LEFT, RIGHT, BACK, FRONT},
-		BOTTOM: {"Bottom", LEFT, RIGHT, FRONT, BACK},
+		FRONT:  {"Front", LEFT, RIGHT, TOP, BOTTOM, BACK},
+		BACK:   {"Back", RIGHT, LEFT, TOP, BOTTOM, FRONT},
+		LEFT:   {"Left", BACK, FRONT, TOP, BOTTOM, RIGHT},
+		RIGHT:  {"Right", FRONT, BACK, TOP, BOTTOM, LEFT},
+		TOP:    {"Top", LEFT, RIGHT, BACK, FRONT, BOTTOM},
+		BOTTOM: {"Bottom", LEFT, RIGHT, FRONT, BACK, TOP},
 	}
 
 	return Cube{length, data, facesMap, connections}
+}
+
+func (cube Cube) getConnectionsHelper() map[int]struct{ rot, rotPrime interface{} } {
+	helper := map[int]struct {
+		rot, rotPrime interface{}
+	}{
+		FRONT:  {cube.Front, cube.FrontPrime},
+		BACK:   {cube.Back, cube.BackPrime},
+		LEFT:   {cube.Left, cube.LeftPrime},
+		RIGHT:  {cube.Right, cube.RightPrime},
+		TOP:    {cube.Up, cube.UpPrime},
+		BOTTOM: {cube.Down, cube.DownPrime},
+	}
+	return helper
 }
 
 func (cube Cube) Rotate(index int) {
@@ -172,6 +198,10 @@ func (cube Cube) RotateInverse(index int) {
 	}
 	cube.data[index] = tmp
 
+}
+
+func (cube Cube) getFaceId(face []int) int {
+	return face[CENTER]
 }
 
 func (cube Cube) getFrontFace() []int {
@@ -230,125 +260,6 @@ func (cube Cube) setFaceRow(face []int, index int, values []int) {
 	}
 }
 
-func (cube Cube) getFaceTopEdge(face []int) int {
-	return cube.getFaceRow(face, 0)[1]
-}
-
-func (cube Cube) getFaceLeftEdge(face []int) int {
-	return cube.getFaceRow(face, 1)[0]
-}
-
-func (cube Cube) getFaceRightEdge(face []int) int {
-	return cube.getFaceRow(face, 1)[2]
-}
-
-func (cube Cube) getFaceBottomEdge(face []int) int {
-	return cube.getFaceRow(face, 2)[1]
-}
-
-func (cube Cube) getFaceCenter(face []int) int {
-	return cube.getFaceRow(face, 1)[1]
-}
-
-func (cube Cube) getTopFaceRightEdgeOpposite() int {
-	return cube.getFaceRow(cube.getRightFace(), 0)[1]
-}
-
-func (cube Cube) getTopFaceLeftEdgeOpposite() int {
-	return cube.getFaceRow(cube.getLeftFace(), 0)[1]
-}
-
-func (cube Cube) getTopFaceTopEdgeOpposite() int {
-	return cube.getFaceRow(cube.getBackFace(), 0)[1]
-}
-
-func (cube Cube) getTopFaceBottomEdgeOpposite() int {
-	return cube.getFaceRow(cube.getFrontFace(), 0)[1]
-}
-
-func (cube Cube) getFaceEdges(face []int) []int {
-	edges := make([]int, 4)
-
-	edges[0] = cube.getFaceTopEdge(face)
-	edges[1] = cube.getFaceRightEdge(face)
-	edges[2] = cube.getFaceBottomEdge(face)
-	edges[3] = cube.getFaceLeftEdge(face)
-
-	return edges
-}
-
-func (cube Cube) getRightSideEdges() []Edge {
-
-	edges := make([]Edge, 4)
-
-	faceEdges := cube.getFaceEdges(cube.getRightFace())
-	sideEdges := make([]int, 4)
-
-	sideEdges[0] = cube.getFaceRow(cube.getTopFace(), 1)[2]
-	sideEdges[1] = cube.getFaceRow(cube.getBackFace(), 1)[0]
-	sideEdges[2] = cube.getFaceRow(cube.getBottomFace(), 1)[2]
-	sideEdges[3] = cube.getFaceRow(cube.getFrontFace(), 1)[2]
-
-	for i := 0; i < 4; i++ {
-		edges[i].a, edges[i].b = faceEdges[i], sideEdges[i]
-	}
-	return edges
-}
-
-func (cube Cube) getLeftSideEdges() []Edge {
-
-	edges := make([]Edge, 4)
-
-	faceEdges := cube.getFaceEdges(cube.getLeftFace())
-	sideEdges := make([]int, 4)
-
-	sideEdges[0] = cube.getFaceRow(cube.getTopFace(), 1)[0]
-	sideEdges[1] = cube.getFaceRow(cube.getFrontFace(), 1)[2]
-	sideEdges[2] = cube.getFaceRow(cube.getBottomFace(), 1)[0]
-	sideEdges[3] = cube.getFaceRow(cube.getBackFace(), 1)[0]
-
-	for i := 0; i < 4; i++ {
-		edges[i].a, edges[i].b = faceEdges[i], sideEdges[i]
-	}
-	return edges
-}
-
-func (cube Cube) getFrontSideEdges() []Edge {
-
-	edges := make([]Edge, 4)
-
-	faceEdges := cube.getFaceEdges(cube.getLeftFace())
-	sideEdges := make([]int, 4)
-
-	sideEdges[0] = cube.getFaceRow(cube.getTopFace(), 2)[1]
-	sideEdges[1] = cube.getFaceRow(cube.getRightFace(), 1)[0]
-	sideEdges[2] = cube.getFaceRow(cube.getBottomFace(), 0)[1]
-	sideEdges[3] = cube.getFaceRow(cube.getLeftFace(), 1)[2]
-
-	for i := 0; i < 4; i++ {
-		edges[i].a, edges[i].b = faceEdges[i], sideEdges[i]
-	}
-	return edges
-}
-
-func (cube Cube) getBackSideEdges() []Edge {
-
-	edges := make([]Edge, 4)
-
-	faceEdges := cube.getFaceEdges(cube.getLeftFace())
-	sideEdges := make([]int, 4)
-
-	sideEdges[0] = cube.getFaceRow(cube.getTopFace(), 0)[1]
-	sideEdges[1] = cube.getFaceRow(cube.getLeftFace(), 1)[0]
-	sideEdges[2] = cube.getFaceRow(cube.getBottomFace(), 2)[1]
-	sideEdges[3] = cube.getFaceRow(cube.getRightFace(), 1)[2]
-
-	for i := 0; i < 4; i++ {
-		edges[i].a, edges[i].b = faceEdges[i], sideEdges[i]
-	}
-	return edges
-}
-
 func (cube Cube) printCube() {
 	colorMap := getColorMap()
 
@@ -367,7 +278,7 @@ func (cube Cube) printCube() {
 	fmt.Print("------------------------\n")
 }
 
-func (cube Cube) Shuffle(movements []string) {
+func (cube Cube) RunSequence(movements []string) {
 
 	movementsMap := cube.getMovementsMap()
 
@@ -393,4 +304,22 @@ func (cube Cube) isSolved() bool {
 		}
 	}
 	return true
+}
+
+func isCorner(pos int) bool {
+	return pos == CORNER_TOP_LEFT ||
+		pos == CORNER_TOP_RIGHT ||
+		pos == CORNER_BOTTOM_LEFT ||
+		pos == CORNER_BOTTOM_RIGHT
+}
+
+func isEdge(pos int) bool {
+	return pos == EDGE_TOP ||
+		pos == EDGE_LEFT ||
+		pos == EDGE_RIGHT ||
+		pos == EDGE_BOTTOM
+}
+
+func (cube Cube) TransfertColor(from, fromPos, to, toPos int) {
+
 }
