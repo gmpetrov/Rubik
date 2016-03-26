@@ -337,3 +337,34 @@ func TestDownPrime(t *testing.T) {
 		}
 	}
 }
+
+func TestMoveFacetDown(t *testing.T) {
+	cubes := make([]Cube, 3)
+	cubes[0] = NewCube()
+	cubes[1] = NewCube()
+	cubes[2] = NewCube()
+
+	cubes[0].Up()
+
+	cubes[1].Up()
+	cubes[1].Front()
+
+	cubes[2].Up()
+	cubes[2].FrontPrime()
+
+	cases := []struct {
+		pos  int
+		cube Cube
+	}{
+		{EDGE_TOP, cubes[0]},
+		{EDGE_RIGHT, cubes[1]},
+		{EDGE_LEFT, cubes[2]},
+	}
+
+	for _, item := range cases {
+		item.cube.MoveFacetDown(FRONT, item.pos)
+		if item.cube.getFrontFace()[EDGE_BOTTOM] != RED {
+			t.Errorf("MoveFacetDown(): want %v, got %v", RED, item.cube.getFrontFace()[EDGE_BOTTOM])
+		}
+	}
+}

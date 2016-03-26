@@ -320,6 +320,25 @@ func isEdge(pos int) bool {
 		pos == EDGE_BOTTOM
 }
 
-func (cube Cube) TransfertColor(from, fromPos, to, toPos int) {
+func (cube Cube) MoveFacetDown(facePos, facet int) {
+	connectionsHelper := cube.getConnectionsHelper()
 
+	if facet <= CORNER_TOP_RIGHT {
+		connectionsHelper[facePos].rot.(func())()
+		connectionsHelper[facePos].rot.(func())()
+	} else if facet <= EDGE_RIGHT {
+		if facet == EDGE_LEFT {
+			connectionsHelper[facePos].rotPrime.(func())()
+		} else if facet == EDGE_RIGHT {
+			connectionsHelper[facePos].rot.(func())()
+		}
+	}
 }
+
+// func (cube Cube) TransfertFacet(from, fromPos, to, toPos int) {
+
+// 	connectionsHelper := cube.getConnectionsHelper()
+
+// 	cube.MoveFacetDown(from, fromPos)
+
+// }
